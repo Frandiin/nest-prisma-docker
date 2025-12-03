@@ -9,10 +9,11 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   // Habilitar CORS
+  const frontendUrl = process.env.FRONTEND_URL || '*';
   app.enableCors({
-    origin: ['https://next-gen-admin-panel.vercel.app/'],
+    origin: frontendUrl,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    credentials: true,
+    credentials: true, // só se você usar cookies; se não, pode remover
   });
 
   // Validação global
