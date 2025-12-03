@@ -1,4 +1,3 @@
-# Dockerfile.dev
 FROM node:20
 
 WORKDIR /app
@@ -9,7 +8,10 @@ RUN pnpm install
 
 COPY . .
 
-# GERA O PRISMA CLIENT AQUI
+# build do nest
+RUN pnpm build
+
+# prisma client
 RUN npx prisma generate
 
-CMD ["pnpm", "start:dev"]
+CMD ["node", "dist/main.js"]
