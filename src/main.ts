@@ -12,6 +12,7 @@ async function bootstrap() {
   app.enableCors({
     origin: ['https://next-gen-admin-panel.vercel.app/'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true,
   });
 
   // Validação global
