@@ -19,10 +19,11 @@ services:
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/mydb?schema=public
     volumes:
       - .:/app
-      - /app/node_modules
+      - uploads:/app/uploads
     ports:
       - '3000:3000'
     command: pnpm start:dev
 
 volumes:
   pgdata:
+  uploads:

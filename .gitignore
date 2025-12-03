@@ -56,3 +56,19 @@ pids
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 /generated/prisma
+
+# Docker
+docker-compose.override.yml
+
+# Database
+*.db
+*.sqlite
+
+# Prisma
+prisma/*.db
+prisma/*.db-journal
+
+# Docs 
+AUTH_ENDPOINTS.md
+CONTRIBUTING.md
+uploads
