@@ -1,4 +1,10 @@
-import { IsString, IsOptional, IsBoolean, IsInt, MinLength } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsBoolean,
+  IsInt,
+  MinLength,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreatePostDto {
@@ -36,4 +42,12 @@ export class CreatePostDto {
   @IsOptional()
   @IsInt()
   categoryId?: number;
+
+  @ApiPropertyOptional({
+    example: 'https://meusite.com/imagem.jpg',
+    description: 'URL da imagem de capa do post',
+  })
+  @IsOptional()
+  @IsString()
+  coverImage?: string;
 }

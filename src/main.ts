@@ -9,11 +9,11 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   // Habilitar CORS
-  const frontendUrl = process.env.FRONTEND_URL || '*';
+  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:8080';
   app.enableCors({
     origin: frontendUrl,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    credentials: true, // só se você usar cookies; se não, pode remover
+    credentials: true,
   });
 
   // Validação global
@@ -26,9 +26,9 @@ async function bootstrap() {
   );
 
   // Servir arquivos estáticos (uploads)
-  app.useStaticAssets(join(process.cwd(), 'uploads'), {
-    prefix: '/uploads/',
-  });
+  // app.useStaticAssets(join(process.cwd(), 'uploads'), {
+  //   prefix: '/uploads/',
+  // });
 
   // Swagger
   const config = new DocumentBuilder()
