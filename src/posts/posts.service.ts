@@ -143,6 +143,47 @@ export class PostsService {
     };
   }
 
+  async postByUser(userId: number, page: number, limit: number) {
+    const skip = (page - 1) * limit;
+    const [posts, total] = await Promise.all([
+      this.prisma.post.findMany({
+        where: { authorId: userId },
+        include: {
+          author: {
+            select: { id: true, name: true, email: true, avatar: true },
+          },
+          comments: {
+            include: {
+              author: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                  avatar: true,
+                },
+              },
+            },
+          },
+          category: true,
+          _count: { select: { comments: true } },
+        },
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.post.count({ where: { authorId: userId } }),
+    ]);
+    return {
+      data: posts,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
+
   async findOne(id: number) {
     const post = await this.prisma.post.findUnique({
       where: { id },
@@ -304,14 +345,21 @@ export class PostsService {
     return { message: 'Post deletado com sucesso' };
   }
 
-  async removeComment(postId: number, commentId: number, userId: number, userRole: Role) {
+  async removeComment(
+    postId: number,
+    commentId: number,
+    userId: number,
+    userRole: Role,
+  ) {
     const post = await this.prisma.post.findUnique({ where: { id: postId } });
 
     if (!post) {
       throw new NotFoundException('Post não encontrado');
     }
 
-    const comment = await this.prisma.comment.findUnique({ where: { id: commentId } });
+    const comment = await this.prisma.comment.findUnique({
+      where: { id: commentId },
+    });
 
     if (!comment) {
       throw new NotFoundException('Comentário não encontrado');
@@ -328,14 +376,22 @@ export class PostsService {
     return { message: 'Comentário deletado com sucesso' };
   }
 
-  async updateComment(postId: number, commentId: number, dto: UpdateCommentDto, userId: number, userRole: Role) {
+  async updateComment(
+    postId: number,
+    commentId: number,
+    dto: UpdateCommentDto,
+    userId: number,
+    userRole: Role,
+  ) {
     const post = await this.prisma.post.findUnique({ where: { id: postId } });
 
     if (!post) {
       throw new NotFoundException('Post não encontrado');
     }
 
-    const comment = await this.prisma.comment.findUnique({ where: { id: commentId } });
+    const comment = await this.prisma.comment.findUnique({
+      where: { id: commentId },
+    });
 
     if (!comment) {
       throw new NotFoundException('Comentário não encontrado');

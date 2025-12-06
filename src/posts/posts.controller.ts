@@ -137,6 +137,19 @@ export class PostsController {
     return this.postsService.findBySlug(slug);
   }
 
+  @Get('user/:userId')
+  @ApiOperation({ summary: 'Obter posts por usuário' })
+  @ApiParam({ name: 'userId', type: 'number', description: 'ID do usuário' })
+  @ApiResponse({ status: 200, description: 'Posts encontrados' })
+  @ApiResponse({ status: 404, description: 'Usuário não encontrado' })
+  findByUser(@Param('userId') userId: string, @Query() filters: FilterPostDto) {
+    return this.postsService.postByUser(
+      +userId,
+      filters.page ?? 1,
+      filters.limit ?? 10,
+    );
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Obter post por ID' })
   @ApiParam({ name: 'id', type: 'number', description: 'ID do post' })
@@ -179,11 +192,18 @@ export class PostsController {
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Atualizar comentário' })
   @ApiParam({ name: 'postId', type: 'number', description: 'ID do post' })
-  @ApiParam({ name: 'commentId', type: 'number', description: 'ID do comentário' })
+  @ApiParam({
+    name: 'commentId',
+    type: 'number',
+    description: 'ID do comentário',
+  })
   @ApiResponse({ status: 200, description: 'Comentário atualizado' })
   @ApiResponse({ status: 401, description: 'Não autorizado' })
   @ApiResponse({ status: 403, description: 'Sem permissão' })
-  @ApiResponse({ status: 404, description: 'Post ou comentário não encontrado' })
+  @ApiResponse({
+    status: 404,
+    description: 'Post ou comentário não encontrado',
+  })
   updateComment(
     @Param('postId') postId: string,
     @Param('commentId') commentId: string,
@@ -204,11 +224,18 @@ export class PostsController {
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Deletar comentário' })
   @ApiParam({ name: 'postId', type: 'number', description: 'ID do post' })
-  @ApiParam({ name: 'commentId', type: 'number', description: 'ID do comentário' })
+  @ApiParam({
+    name: 'commentId',
+    type: 'number',
+    description: 'ID do comentário',
+  })
   @ApiResponse({ status: 200, description: 'Comentário deletado' })
   @ApiResponse({ status: 401, description: 'Não autorizado' })
   @ApiResponse({ status: 403, description: 'Sem permissão' })
-  @ApiResponse({ status: 404, description: 'Post ou comentário não encontrado' })
+  @ApiResponse({
+    status: 404,
+    description: 'Post ou comentário não encontrado',
+  })
   removeComment(
     @Param('postId') postId: string,
     @Param('commentId') commentId: string,
