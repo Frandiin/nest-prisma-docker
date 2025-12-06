@@ -5,10 +5,10 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { PrismaService } from '../prisma/prisma.service';
+
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-import { Role } from '@prisma/client';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class AuthService {
@@ -73,7 +73,7 @@ export class AuthService {
       return null;
     }
 
-    const { password: _, ...result } = user;
+    const { password: _password, ...result } = user;
     return result;
   }
 
@@ -145,8 +145,8 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  private returnSafeUser(user: any) {
-    const { password, refreshTokenHash, ...safe } = user;
+  private returnSafeUser(user: { password: string; refreshTokenHash: string | null; [key: string]: unknown }) {
+    const { password: _password, refreshTokenHash: _refreshTokenHash, ...safe } = user;
     return safe;
   }
 }

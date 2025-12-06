@@ -55,13 +55,13 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Run linter
-        run: pnpm lint
-
       - name: Generate Prisma Client
         run: pnpm prisma generate
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+
+      - name: Run linter
+        run: pnpm lint
 
       - name: Run migrations
         run: pnpm prisma migrate deploy
