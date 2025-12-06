@@ -18,6 +18,7 @@ import {
 } from '@nestjs/swagger';
 import { UploadService } from './upload.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { cloudinaryStorage } from '../cloudinary/cloudinary.storage';
 
 @ApiTags('Upload')
 @Controller('upload')
@@ -26,7 +27,7 @@ export class UploadController {
   constructor(private readonly uploadService: UploadService) {}
 
   @Post('avatar')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('file', { storage: cloudinaryStorage }))
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Upload de avatar (200x200, max 5MB)' })
   @ApiConsumes('multipart/form-data')
@@ -56,11 +57,16 @@ export class UploadController {
     if (!userId) {
       throw new BadRequestException('Usuário não encontrado no token');
     }
-    const filepath = await this.uploadService.processAvatar(file, userId);
+
+    const { url, publicId } = await this.uploadService.processAvatar(
+      file,
+      userId,
+    );
 
     return {
       message: 'Avatar enviado com sucesso',
-      url: filepath,
+      url,
+      publicId,
     };
   }
 
@@ -84,17 +90,18 @@ export class UploadController {
   })
   @ApiResponse({ status: 400, description: 'Arquivo inválido' })
   @ApiResponse({ status: 401, description: 'Não autorizado' })
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('file', { storage: cloudinaryStorage }))
   async uploadCover(@UploadedFile() file: Express.Multer.File) {
     if (!file) {
       throw new BadRequestException('Nenhum arquivo fornecido');
     }
 
-    const filepath = await this.uploadService.processCoverImage(file);
+    const { url, publicId } = await this.uploadService.processCoverImage(file);
 
     return {
       message: 'Imagem de capa enviada com sucesso',
-      url: filepath,
+      url,
+      publicId,
     };
   }
 }

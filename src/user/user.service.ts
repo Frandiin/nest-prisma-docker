@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PaginationDto } from './dto/pagination.dto';
 import * as bcrypt from 'bcrypt';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class UserService {
@@ -70,11 +70,53 @@ export class UserService {
         role: true,
         createdAt: true,
         updatedAt: true,
+        posts: {
+          select: {
+            id: true,
+            title: true,
+            slug: true,
+            published: true,
+            createdAt: true,
+            updatedAt: true,
+            comments: {
+              select: {
+                id: true,
+                content: true,
+                createdAt: true,
+                updatedAt: true,
+                author: {
+                  select: {
+                    id: true,
+                    name: true,
+                    avatar: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        comments: {
+          select: {
+            id: true,
+            content: true,
+            createdAt: true,
+            updatedAt: true,
+            post: {
+              select: {
+                id: true,
+                title: true,
+                slug: true,
+              },
+            },
+          },
+        },
       },
     });
+
     if (!user) {
-      return 'User not found';
+      throw new NotFoundException('User not found');
     }
+
     return user;
   }
 

@@ -30,6 +30,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { PaginationDto } from './dto/pagination.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UploadService } from '../upload/upload.service';
+import { cloudinaryStorage } from '../cloudinary/cloudinary.storage';
 
 @ApiTags('Users')
 @Controller('users')
@@ -85,13 +86,16 @@ export class UserController {
   })
   @ApiResponse({ status: 200, description: 'Avatar atualizado' })
   @ApiResponse({ status: 401, description: 'Não autorizado' })
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('file', { storage: cloudinaryStorage }))
   async uploadAvatar(
     @UploadedFile() file: Express.Multer.File,
     @Request() req: any,
   ) {
     const avatarUrl = await this.uploadService.processAvatar(file, req.user.id);
-    const user = await this.userService.updateAvatar(req.user.id, avatarUrl);
+    const user = await this.userService.updateAvatar(
+      req.user.id,
+      avatarUrl.url,
+    );
 
     return {
       message: 'Avatar atualizado com sucesso',
