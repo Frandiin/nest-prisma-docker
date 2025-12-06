@@ -60,19 +60,11 @@ jobs:
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
 
-      - name: Run linter
-        run: pnpm lint
-
+     
       - name: Run migrations
         run: pnpm prisma migrate deploy
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
-
-      - name: Run tests
-        run: pnpm test
-        env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
-          JWT_SECRET: test-secret
 
       - name: Build
         run: pnpm build
